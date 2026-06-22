@@ -27,6 +27,26 @@ const percent = (stat) => {
   return `${Math.round((stat.correct / stat.total) * 100)}%`;
 };
 
+const currentLevelTitle = (state) =>
+  byId(state.levels, `level-${String(Math.min(state.progress.unlockedLevel, state.levels.length)).padStart(2, "0")}`)?.title ?? "桃园结义";
+
+const renderCommanderStatus = (state) => `
+  <section class="commander-status" aria-label="小将军进度">
+    <article>
+      <span>小将军进度</span>
+      <strong>第 ${Math.min(state.progress.unlockedLevel, state.levels.length)} 关 · ${escapeHtml(currentLevelTitle(state))}</strong>
+    </article>
+    <article>
+      <span>已收复城池</span>
+      <strong>${state.progress.completedLevels.length} / ${state.levels.length}</strong>
+    </article>
+    <article>
+      <span>武将卡</span>
+      <strong>${state.progress.unlockedWarriors.length} / ${state.warriors.length}</strong>
+    </article>
+  </section>
+`;
+
 export const renderApp = (root, state, actions) => {
   root.innerHTML = layoutForRoute(state);
   bindEvents(root, state, actions);
@@ -53,8 +73,12 @@ const renderMap = (state) => `
         <button data-action="parent">家长统计</button>
       </nav>
     </header>
-    <section class="notice">今天建议闯 1-2 关，保持轻松学习。</section>
-    <section class="map-grid">
+    ${renderCommanderStatus(state)}
+    <section class="strategist-banner">
+      <div class="strategist-avatar">军</div>
+      <p><strong>小军师：</strong>今天建议闯 1-2 关。先观察城池状态，再带上新武将出发。</p>
+    </section>
+    <section class="campaign-road">
       ${state.levels.map((level) => renderLevelNode(level, state)).join("")}
     </section>
   </main>
@@ -66,6 +90,7 @@ const renderLevelNode = (level, state) => {
   const warrior = byId(state.warriors, level.unlockWarriorId);
   return `
     <article class="level-node ${locked ? "is-locked" : ""} ${completed ? "is-complete" : ""}">
+      <div class="level-badge">${completed ? "已收复" : locked ? "待侦察" : "当前目标"}</div>
       <span class="flag">第 ${level.order} 关</span>
       <h2>${escapeHtml(level.title)}</h2>
       <p>${escapeHtml(level.description)}</p>
@@ -85,8 +110,16 @@ const renderQuiz = (state) => {
 
   return `
     <main class="app-shell quiz-shell">
+      ${renderCommanderStatus(state)}
       <section class="panel quiz-card">
-        <p class="eyebrow">第 ${state.activeSession.currentIndex + 1} / ${state.activeSession.questions.length} 题 · ${subjectNames[question.subject]}</p>
+        <div class="quiz-hud">
+          <p class="eyebrow">第 ${state.activeSession.currentIndex + 1} / ${state.activeSession.questions.length} 题 · ${subjectNames[question.subject]}</p>
+          <div class="progress-track"><span style="width: ${((state.activeSession.currentIndex + 1) / state.activeSession.questions.length) * 100}%"></span></div>
+        </div>
+        <div class="strategist-note">
+          <div class="strategist-avatar">军</div>
+          <p><strong>小军师：</strong>${state.activeSession.retryQuestionId ? "别急，再想想关键词，还有一次机会。" : "读完题目再选答案，小将军稳一点就能拿下这座城。"}</p>
+        </div>
         <h1>${escapeHtml(question.prompt)}</h1>
         <div class="option-grid">
           ${question.options.map((option, index) => `
@@ -104,15 +137,24 @@ const renderQuiz = (state) => {
 const renderResult = (state) => {
   const result = state.lastResult;
   const warrior = byId(state.warriors, result.warriorId);
+  const nextLevel = state.levels.find((level) => level.order === result.levelOrder + 1)
+    ?? state.levels.find((level) => level.order === state.progress.unlockedLevel);
+  const canContinue = nextLevel && nextLevel.order <= state.levels.length && nextLevel.id !== result.levelId;
   return `
-    <main class="app-shell">
-      <section class="panel result-card">
-        <p class="eyebrow">通关成功</p>
-        <h1>解锁 ${escapeHtml(warrior.name)}</h1>
-        <div class="warrior-avatar large-avatar">${escapeHtml(warrior.name.slice(0, 1))}</div>
-        <p>${escapeHtml(warrior.trait)}：${escapeHtml(warrior.description)}</p>
-        <p>本关答对 ${result.correctCount} / ${result.totalCount} 题。</p>
+    <main class="app-shell result-shell">
+      <section class="panel result-card hero-result">
+        <p class="eyebrow">武将登场</p>
+        <h1>${escapeHtml(warrior.name)} 加入队伍</h1>
+        <div class="result-stage">
+          <div class="warrior-avatar large-avatar">${escapeHtml(warrior.name.slice(0, 1))}</div>
+          <div>
+            <p class="victory-line">通关成功，本关答对 ${result.correctCount} / ${result.totalCount} 题。</p>
+            <p>${escapeHtml(warrior.trait)}：${escapeHtml(warrior.description)}</p>
+            <p class="next-stop">${canContinue ? `下一站：${escapeHtml(nextLevel.title)}` : "下一站：全部城池已完成"}</p>
+          </div>
+        </div>
         <div class="action-row">
+          ${canContinue ? `<button data-action="start-level" data-level-id="${nextLevel.id}">继续下一关</button>` : ""}
           <button data-action="map">返回地图</button>
           <button data-action="warriors">查看图鉴</button>
         </div>
@@ -279,6 +321,7 @@ const handleAnswer = (selectedIndex, state, actions) => {
     playSound("complete", progress.soundEnabled);
     actions.finishLevel({
       levelId: level.id,
+      levelOrder: level.order,
       warriorId: level.unlockWarriorId,
       correctCount,
       totalCount: result.session.questions.length
