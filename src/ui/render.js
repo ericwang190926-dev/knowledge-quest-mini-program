@@ -200,7 +200,11 @@ const renderParentStats = (state) => `
 `;
 
 const bindEvents = (root, state, actions) => {
-  root.addEventListener("click", (event) => {
+  if (root.__knowledgeQuestClickHandler) {
+    root.removeEventListener("click", root.__knowledgeQuestClickHandler);
+  }
+
+  root.__knowledgeQuestClickHandler = (event) => {
     const target = event.target.closest("[data-action]");
     if (!target) return;
     const action = target.dataset.action;
@@ -231,7 +235,9 @@ const bindEvents = (root, state, actions) => {
         message.textContent = "口令不正确。";
       }
     }
-  });
+  };
+
+  root.addEventListener("click", root.__knowledgeQuestClickHandler);
 };
 
 const handleAnswer = (selectedIndex, state, actions) => {
