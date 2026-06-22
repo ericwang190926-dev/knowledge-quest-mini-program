@@ -1,6 +1,8 @@
 import { answerCurrentQuestion, createQuizSession, getCurrentQuestion } from "../domain/quiz-session.js";
 import { completeLevel, recordAnswer, recordWrongQuestion } from "../domain/progress.js";
 import { playSound } from "../audio/sounds.js";
+import campaignBoardImage from "../assets/campaign-board.png";
+import strategistAvatarImage from "../assets/junior-strategist.png";
 
 const subjectNames = {
   chinese: "语文",
@@ -47,6 +49,39 @@ const renderCommanderStatus = (state) => `
   </section>
 `;
 
+const renderStrategistAvatar = () => `
+  <img class="strategist-avatar" src="${strategistAvatarImage}" alt="小军师" />
+`;
+
+const renderRosterPreview = (state) => {
+  const unlocked = state.warriors.filter((warrior) => state.progress.unlockedWarriors.includes(warrior.id));
+  const previewWarriors = (unlocked.length > 0 ? unlocked : state.warriors.slice(0, 3)).slice(0, 4);
+
+  return `
+    <aside class="roster-preview" aria-label="我的武将卡">
+      <div class="roster-header">
+        <span>我的武将卡</span>
+        <strong>${state.progress.unlockedWarriors.length}/${state.warriors.length}</strong>
+      </div>
+      <div class="roster-list">
+        ${previewWarriors.map((warrior) => {
+          const isUnlocked = state.progress.unlockedWarriors.includes(warrior.id);
+          return `
+            <article class="mini-warrior-card ${isUnlocked ? "" : "is-locked"}">
+              <div class="mini-warrior-avatar">${isUnlocked ? escapeHtml(warrior.name.slice(0, 1)) : "?"}</div>
+              <div>
+                <strong>${isUnlocked ? escapeHtml(warrior.name) : "神秘武将"}</strong>
+                <span>${isUnlocked ? escapeHtml(warrior.trait) : "继续闯关解锁"}</span>
+              </div>
+            </article>
+          `;
+        }).join("")}
+      </div>
+      <button data-action="warriors">查看全部</button>
+    </aside>
+  `;
+};
+
 export const renderApp = (root, state, actions) => {
   root.innerHTML = layoutForRoute(state);
   bindEvents(root, state, actions);
@@ -63,6 +98,12 @@ const layoutForRoute = (state) => {
 
 const renderMap = (state) => `
   <main class="app-shell map-shell">
+    <section class="game-logo-panel">
+      <div>
+        <p>三年级 · 历史 · 趣味闯关</p>
+        <h1>三国小将军</h1>
+      </div>
+    </section>
     <header class="topbar">
       <div>
         <p class="eyebrow">三国知识闯关</p>
@@ -76,11 +117,14 @@ const renderMap = (state) => `
     </header>
     ${renderCommanderStatus(state)}
     <section class="strategist-banner">
-      <div class="strategist-avatar">军</div>
+      ${renderStrategistAvatar()}
       <p><strong>小军师：</strong>今天建议闯 1-2 关。先观察城池状态，再带上新武将出发。</p>
     </section>
-    <section class="campaign-road">
-      ${state.levels.map((level) => renderLevelNode(level, state)).join("")}
+    <section class="map-stage">
+      <section class="campaign-road" style="background-image: linear-gradient(rgba(45, 28, 12, 0.08), rgba(45, 28, 12, 0.18)), url('${campaignBoardImage}')">
+        ${state.levels.map((level) => renderLevelNode(level, state)).join("")}
+      </section>
+      ${renderRosterPreview(state)}
     </section>
   </main>
 `;
@@ -118,7 +162,7 @@ const renderQuiz = (state) => {
           <div class="progress-track"><span style="width: ${((state.activeSession.currentIndex + 1) / state.activeSession.questions.length) * 100}%"></span></div>
         </div>
         <div class="strategist-note">
-          <div class="strategist-avatar">军</div>
+          ${renderStrategistAvatar()}
           <p><strong>小军师：</strong>${state.activeSession.retryQuestionId ? "别急，再想想关键词，还有一次机会。" : "读完题目再选答案，小将军稳一点就能拿下这座城。"}</p>
         </div>
         <h1>${escapeHtml(question.prompt)}</h1>
