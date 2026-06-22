@@ -1,0 +1,17 @@
+{
+  "name": "knowledge-quest-mini-program",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "devDependencies": {
+    "vite": "^5.4.19",
+    "vitest": "^2.1.9"
+  }
+}
