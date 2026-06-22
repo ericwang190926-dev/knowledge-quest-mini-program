@@ -40,3 +40,179 @@ input {
   color: #9b2c2c;
   font-weight: 700;
 }
+
+.topbar {
+  max-width: 1120px;
+  margin: 0 auto 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+}
+
+.topbar h1,
+.panel h1 {
+  margin: 0;
+  color: #562b16;
+}
+
+.top-actions,
+.action-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+button {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  color: #fffaf0;
+  background: #9b2c2c;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  background: #9ca3af;
+}
+
+.notice {
+  max-width: 1120px;
+  margin: 0 auto 18px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #fef3c7;
+  color: #713f12;
+  font-weight: 700;
+}
+
+.map-grid,
+.warrior-grid,
+.stats-grid {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.level-node,
+.warrior-card,
+.stat-card {
+  min-height: 190px;
+  padding: 18px;
+  border: 2px solid #7b341e;
+  border-radius: 8px;
+  background: #fffaf0;
+  box-shadow: 0 10px 22px rgba(77, 45, 20, 0.12);
+}
+
+.level-node h2,
+.warrior-card h2 {
+  margin: 8px 0;
+  color: #562b16;
+}
+
+.flag,
+.reward {
+  color: #9b2c2c;
+  font-weight: 700;
+}
+
+.is-locked {
+  opacity: 0.62;
+}
+
+.is-complete {
+  border-color: #2f855a;
+}
+
+.quiz-card {
+  max-width: 760px;
+}
+
+.option-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.option-button {
+  width: 100%;
+  color: #1f2933;
+  background: #fef3c7;
+  border: 2px solid #b45309;
+  text-align: left;
+}
+
+.feedback {
+  min-height: 24px;
+  color: #9b2c2c;
+  font-weight: 700;
+}
+
+.warrior-avatar {
+  width: 64px;
+  height: 64px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #f6ad55;
+  color: #562b16;
+  font-size: 30px;
+  font-weight: 800;
+}
+
+.large-avatar {
+  width: 96px;
+  height: 96px;
+  margin: 18px 0;
+  font-size: 44px;
+}
+
+.passcode-input {
+  width: 160px;
+  height: 48px;
+  margin: 14px 0;
+  padding: 8px 12px;
+  border: 2px solid #7b341e;
+  border-radius: 8px;
+  font-size: 24px;
+  letter-spacing: 4px;
+}
+
+.stat-card {
+  min-height: 110px;
+  display: grid;
+  gap: 8px;
+}
+
+.stat-card span {
+  font-size: 28px;
+  color: #2f855a;
+  font-weight: 800;
+}
+
+.stacked-panel {
+  margin-top: 18px;
+}
+
+.wrong-item {
+  padding: 12px 0;
+  border-top: 1px solid #e2c083;
+}
+
+@media (max-width: 640px) {
+  .app-shell {
+    padding: 14px;
+  }
+
+  .topbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}
