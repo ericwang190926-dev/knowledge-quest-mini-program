@@ -2,7 +2,7 @@ import "./styles.css";
 import { levels } from "./data/levels.js";
 import { questions } from "./data/questions.js";
 import { warriors } from "./data/warriors.js";
-import { loadProgress, saveProgress } from "./storage/local-store.js";
+import { loadProgress, resetProgress as resetStoredProgress, saveProgress } from "./storage/local-store.js";
 import { renderApp } from "./ui/render.js";
 
 const app = document.querySelector("#app");
@@ -35,6 +35,14 @@ const actions = {
   },
   finishLevel(lastResult, progress) {
     setState({ route: { name: "result" }, lastResult, activeSession: null, progress });
+  },
+  resetProgress() {
+    setState({
+      route: { name: "map" },
+      progress: resetStoredProgress(),
+      activeSession: null,
+      lastResult: null
+    });
   }
 };
 

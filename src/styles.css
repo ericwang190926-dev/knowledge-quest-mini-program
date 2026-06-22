@@ -79,6 +79,12 @@ button:disabled {
   background: #9ca3af;
 }
 
+.secondary-button {
+  color: #713f12;
+  background: #fef3c7;
+  border: 2px solid #b45309;
+}
+
 .notice {
   max-width: 1120px;
   margin: 0 auto 18px;

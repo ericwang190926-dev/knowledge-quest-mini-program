@@ -61,4 +61,33 @@ describe("render event binding", () => {
 
     expect(navigationCount).toBe(1);
   });
+
+  it("exposes a reset action for restoring the initial state", () => {
+    const root = createFakeRoot();
+    const state = {
+      route: { name: "map" },
+      progress: createDefaultProgress(),
+      levels,
+      questions,
+      warriors,
+      activeSession: null,
+      lastResult: null
+    };
+    let resetCount = 0;
+    const actions = {
+      navigate() {},
+      updateProgress() {},
+      updateSession() {},
+      finishLevel() {},
+      resetProgress() {
+        resetCount += 1;
+      }
+    };
+
+    renderApp(root, state, actions);
+    expect(root.innerHTML).toContain("恢复初始状态");
+    root.click("reset-progress");
+
+    expect(resetCount).toBe(1);
+  });
 });

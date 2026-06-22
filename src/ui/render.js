@@ -71,6 +71,7 @@ const renderMap = (state) => `
       <nav class="top-actions" aria-label="主要入口">
         <button data-action="warriors">武将图鉴</button>
         <button data-action="parent">家长统计</button>
+        <button class="secondary-button" data-action="reset-progress">恢复初始状态</button>
       </nav>
     </header>
     ${renderCommanderStatus(state)}
@@ -254,6 +255,7 @@ const bindEvents = (root, state, actions) => {
     if (action === "map") actions.navigate({ name: "map" });
     if (action === "warriors") actions.navigate({ name: "warriors" });
     if (action === "parent") actions.navigate({ name: "parent" });
+    if (action === "reset-progress") actions.resetProgress();
 
     if (action === "start-level") {
       const level = byId(state.levels, target.dataset.levelId);
