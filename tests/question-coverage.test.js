@@ -12,6 +12,8 @@ describe("question coverage", () => {
     expect(hasSubjectPrompt("math", [/一共|还剩|需要|每天|买/])).toBe(true);
     expect(hasSubjectPrompt("math", [/平年|闰年|月份|天/])).toBe(true);
     expect(hasSubjectPrompt("math", [/周长/])).toBe(true);
+    expect(hasSubjectPrompt("math", [/面积/])).toBe(true);
+    expect(hasSubjectPrompt("math", [/先.*再|两步|一共要|实际/])).toBe(true);
   });
 
   it("includes English sentence comprehension questions", () => {

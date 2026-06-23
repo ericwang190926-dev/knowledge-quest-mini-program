@@ -32,4 +32,16 @@ describe("static game data", () => {
       expect(question.explanation.length).toBeGreaterThan(0);
     }
   });
+
+  it("spreads correct answers across option positions", () => {
+    const answerCounts = questions.reduce((counts, question) => {
+      counts[question.answerIndex] += 1;
+      return counts;
+    }, [0, 0, 0, 0]);
+
+    for (const count of answerCounts) {
+      expect(count).toBeGreaterThanOrEqual(20);
+      expect(count).toBeLessThanOrEqual(40);
+    }
+  });
 });
